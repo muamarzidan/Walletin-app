@@ -113,6 +113,92 @@ export const styles = StyleSheet.create({
     fontWeight: "600",
     marginLeft: 8,
   },
+  searchContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: COLORS.card,
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    marginBottom: 16,
+    shadowColor: COLORS.shadow,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 1,
+  },
+  searchIcon: {
+    marginRight: 8,
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: 15,
+    color: COLORS.text,
+  },
+  typeFilterContainer: {
+    flexDirection: "row",
+    gap: 8,
+    marginBottom: 12,
+  },
+  typeFilterPill: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderRadius: 10,
+    backgroundColor: COLORS.card,
+    gap: 6,
+    shadowColor: COLORS.shadow,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 1,
+  },
+  typeFilterPillActive: {
+    backgroundColor: COLORS.primary,
+  },
+  typeFilterText: {
+    fontSize: 14,
+    fontWeight: "500",
+    color: COLORS.text,
+  },
+  typeFilterTextActive: {
+    color: COLORS.white,
+  },
+  categoryFilterContainer: {
+    marginBottom: 16,
+  },
+  categoryFilterContent: {
+    gap: 8,
+    paddingRight: 20,
+  },
+  categoryFilterPill: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    borderRadius: 20,
+    backgroundColor: COLORS.card,
+    gap: 6,
+    shadowColor: COLORS.shadow,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 1,
+  },
+  categoryFilterPillActive: {
+    backgroundColor: COLORS.primary,
+  },
+  categoryFilterText: {
+    fontSize: 14,
+    fontWeight: "500",
+    color: COLORS.text,
+  },
+  categoryFilterTextActive: {
+    color: COLORS.white,
+  },
   balanceTitle: {
     fontSize: 16,
     color: COLORS.textLight,
@@ -205,10 +291,18 @@ export const styles = StyleSheet.create({
     fontSize: 12,
     color: COLORS.textLight,
   },
-  deleteButton: {
-    padding: 15,
+  actionButtons: {
+    flexDirection: "row",
     borderLeftWidth: 1,
     borderLeftColor: COLORS.border,
+  },
+  editButton: {
+    padding: 15,
+    borderRightWidth: 1,
+    borderRightColor: COLORS.border,
+  },
+  deleteButton: {
+    padding: 15,
   },
   transactionsContainer: {
     marginBottom: 20,

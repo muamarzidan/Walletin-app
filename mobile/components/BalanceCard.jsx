@@ -1,7 +1,9 @@
 import { View, Text } from "react-native";
+
 import { styles } from "../assets/styles/home.styles";
 import { COLORS } from "../constants/colors";
-import { formatRupiah } from "../lib/utils";
+import { formatRupiah } from "../utils/formatters";
+
 
 export const BalanceCard = ({ summary }) => {
   return (

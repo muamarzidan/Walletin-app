@@ -6,21 +6,27 @@ import {
   TextInput,
   ActivityIndicator,
 } from "react-native";
-import { useState } from "react";
-import { useRouter } from "expo-router";
+import { useState, useEffect, useMemo } from "react";
+import { useRouter, useLocalSearchParams } from "expo-router";
 import { useUser } from "@clerk/clerk-expo";
 
-import transactionRepository from "../../repositories/transaction.repository";
-import { CATEGORIES } from "../../constants/categories";
-import { styles } from "../../assets/styles/create.styles";
-import { COLORS } from "../../constants/colors";
+import transactionRepository from "../../../repositories/transaction.repository";
+import { CATEGORIES } from "../../../constants/categories";
+import { styles } from "../../../assets/styles/create.styles";
+import { COLORS } from "../../../constants/colors";
 import { Ionicons } from "@expo/vector-icons";
-import { showErrorAlert } from "../../utils/errorHandler";
+import { showErrorAlert } from "../../../utils/errorHandler";
 
 
-const CreateScreen = () => {
+const EditScreen = () => {
   const router = useRouter();
   const { user } = useUser();
+  const params = useLocalSearchParams();
+  
+  const transaction = useMemo(() => 
+    params.transaction ? JSON.parse(params.transaction) : null,
+    [params.transaction]
+  );
 
   const [title, setTitle] = useState("");
   const [amount, setAmount] = useState("");
@@ -28,7 +34,16 @@ const CreateScreen = () => {
   const [isExpense, setIsExpense] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleCreate = async () => {
+  useEffect(() => {
+    if (transaction) {
+      setTitle(transaction.title);
+      setAmount(Math.abs(parseFloat(transaction.amount)).toString());
+      setSelectedCategory(transaction.category);
+      setIsExpense(parseFloat(transaction.amount) < 0);
+    }
+  }, [transaction]);
+
+  const handleUpdate = async () => {
     if (!title.trim()) return Alert.alert("Error", "Please enter a transaction title");
     if (!amount || isNaN(parseFloat(amount)) || parseFloat(amount) <= 0) {
       Alert.alert("Error", "Please enter a valid amount");
@@ -43,37 +58,42 @@ const CreateScreen = () => {
         ? -Math.abs(parseFloat(amount))
         : Math.abs(parseFloat(amount));
 
-      await transactionRepository.createTransaction({
-        user_id: user.id,
+      await transactionRepository.updateTransaction(transaction.id, {
         title,
         amount: formattedAmount,
         category: selectedCategory,
       });
 
-      Alert.alert("Success", "Transaction created successfully");
+      Alert.alert("Success", "Transaction updated successfully");
       router.back();
     } catch (error) {
-      showErrorAlert(error, "Create Failed", Alert);
-      console.error("Error creating transaction:", error);
+      showErrorAlert(error, "Update Failed", Alert);
+      console.error("Error updating transaction:", error);
     } finally {
       setIsLoading(false);
     }
   };
 
+  if (!transaction) {
+    return (
+      <View style={styles.container}>
+        <Text>Transaction not found</Text>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
-      {/* HEADER */}
       <View style={styles.header}>
         <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
           <Ionicons name="arrow-back" size={24} color={COLORS.text} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>New Transaction</Text>
+        <Text style={styles.headerTitle}>Edit Transaction</Text>
         <View style={{ width: 24 }} />
       </View>
-      {/* MAIN CONTENT */}
+
       <View style={styles.card}>
         <View style={styles.typeSelector}>
-          {/* EXPENSE SELECTOR */}
           <TouchableOpacity
             style={[styles.typeButton, isExpense && styles.typeButtonActive]}
             onPress={() => setIsExpense(true)}
@@ -88,7 +108,6 @@ const CreateScreen = () => {
               Expense
             </Text>
           </TouchableOpacity>
-          {/* INCOME SELECTOR */}
           <TouchableOpacity
             style={[styles.typeButton, !isExpense && styles.typeButtonActive]}
             onPress={() => setIsExpense(false)}
@@ -104,7 +123,7 @@ const CreateScreen = () => {
             </Text>
           </TouchableOpacity>
         </View>
-        {/* AMOUNT CONTAINER */}
+
         <View style={styles.amountContainer}>
           <Text style={styles.currencySymbol}>Rp</Text>
           <TextInput
@@ -116,7 +135,7 @@ const CreateScreen = () => {
             keyboardType="numeric"
           />
         </View>
-        {/* INPUT CONTAINER */}
+
         <View style={styles.inputContainer}>
           <Ionicons
             name="create-outline"
@@ -132,11 +151,11 @@ const CreateScreen = () => {
             onChangeText={setTitle}
           />
         </View>
-        {/* TITLE */}
+
         <Text style={styles.sectionTitle}>
           <Ionicons name="pricetag-outline" size={16} color={COLORS.text} /> Category
         </Text>
-        {/* CATEGORIES GRID */}
+
         <View style={styles.categoryGrid}>
           {CATEGORIES.map((category) => (
             <TouchableOpacity
@@ -165,16 +184,16 @@ const CreateScreen = () => {
           ))}
         </View>
       </View>
-      {/* ACTION BUTTON */}
+
       <View style={styles.saveButtonWrapper}>
         <TouchableOpacity
           style={[styles.saveButton, isLoading && styles.saveButtonDisabled]}
-          onPress={handleCreate}
+          onPress={handleUpdate}
           disabled={isLoading}
         >
           {!isLoading && <Ionicons name="checkmark-circle" size={22} color={COLORS.white} />}
           <Text style={styles.saveButtonText}>
-            {isLoading ? "Saving..." : "Save Transaction"}
+            {isLoading ? "Updating..." : "Update Transaction"}
           </Text>
         </TouchableOpacity>
       </View>
@@ -187,4 +206,5 @@ const CreateScreen = () => {
     </View>
   );
 };
-export default CreateScreen;
+
+export default EditScreen;
